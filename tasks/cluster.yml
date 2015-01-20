@@ -1,0 +1,29 @@
+---
+
+- name: check if erlang cookie changed and if it is so stopping server
+  template:
+    src=erlang_cookie.j2
+    dest=/var/lib/rabbitmq/.erlang.cookie
+    owner=rabbitmq
+    group=rabbitmq
+    mode=0400
+  #notify: stop rabbitmq-server
+
+#- meta: flush_handlers
+#
+#- name: start rabbitmq server
+#  service:
+#    name=rabbitmq-server
+#    state=started
+#
+#- name: stop rabbitmq app
+#  shell: rabbitmqctl stop_app
+#
+#- name: resetting rabbitmq app
+#  shell: rabbitmqctl reset
+#
+#- name: add this node to cluster
+#  shell: rabbitmqctl join_cluster rabbit@{{ rabbitmq_cluster_master }}
+#
+#- name: start rabbitmq app
+#  shell: rabbitmqctl start_app
