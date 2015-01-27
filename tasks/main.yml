@@ -7,3 +7,4 @@
   when: rabbitmq_federation
 
 - include: cluster.yml
+  tags: ["rabbit-cluster"]
