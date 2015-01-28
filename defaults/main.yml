@@ -45,4 +45,6 @@ rabbitmq_env: false
 rabbitmq_erlang_cookie                         : beKSqkmoLrtvVfjOytLOQpATbGVEGbVA
 
 # guest user
-remove_guest_user                              : "true"
+remove_guest_user                              : true
+
+rabbitmq_clustering                            : false
