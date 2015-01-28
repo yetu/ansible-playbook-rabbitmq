@@ -6,6 +6,9 @@
 - include: federation.yml
   when: rabbitmq_federation
 
+- include: erlang.yml
+  tags: ["rabbitmq-erlang"]
+
 - include: cluster.yml
   when: rabbitmq_clustering
-  tags: ["rabbit-cluster"]
+  tags: ["rabbitmq-cluster"]

@@ -1,0 +1,34 @@
+
+- name: check current erlang cookie
+  shell: "cat {{ rabbitmq_erlang_cookie_path }}"
+  register: rabbitmq_erlang_cookie_current
+
+#- name: "debug"
+#  debug: msg="{{ rabbitmq_erlang_cookie_current.stdout }}"
+#
+#- name: "debug2"
+#  debug: msg="{{ rabbitmq_erlang_cookie }}"
+#
+#- name: "debug3"
+#  debug: msg="{{ rabbitmq_erlang_cookie == rabbitmq_erlang_cookie_current.stdout }}"
+
+- name: "backup old erlang cookie just in case"
+  shell: "cp -a {{ rabbitmq_erlang_cookie_path }} {{ rabbitmq_erlang_cookie_path }}.old"
+  when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout
+
+- name: "stop rabbitmq-server before updating erlang cookie"
+  service: name=rabbitmq-server state=stopped
+  when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout
+
+- name: "update rabbitmq erlang cookie"
+  template:
+    src="erlang_cookie.j2"
+    dest="{{ rabbitmq_erlang_cookie_path }}"
+    owner="rabbitmq"
+    group="rabbitmq"
+    mode="0400"
+  when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout
+
+- name: "start rabbitmq-server again"
+  service: name=rabbitmq-server state=started
+  when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout

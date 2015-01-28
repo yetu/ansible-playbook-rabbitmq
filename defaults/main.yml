@@ -42,9 +42,11 @@ rabbitmq_conf_ssl_options_fail_if_no_peer_cert: "true"
 rabbitmq_env: false
 
 # rabbitmq
+rabbitmq_erlang_cookie_path                    : "/var/lib/rabbitmq/.erlang.cookie"
 rabbitmq_erlang_cookie                         : beKSqkmoLrtvVfjOytLOQpATbGVEGbVA
 
 # guest user
 remove_guest_user                              : true
 
 rabbitmq_clustering                            : false
+
