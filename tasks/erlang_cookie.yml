@@ -1,16 +1,13 @@
+---
+
+#
+# The rabbitmq server must be completely stopped before changing the erlang cookie.
+# otherwise the server screws up and is unable to stop or start again when you kill the process
+#
 
 - name: check current erlang cookie
   shell: "cat {{ rabbitmq_erlang_cookie_path }}"
   register: rabbitmq_erlang_cookie_current
-
-#- name: "debug"
-#  debug: msg="{{ rabbitmq_erlang_cookie_current.stdout }}"
-#
-#- name: "debug2"
-#  debug: msg="{{ rabbitmq_erlang_cookie }}"
-#
-#- name: "debug3"
-#  debug: msg="{{ rabbitmq_erlang_cookie == rabbitmq_erlang_cookie_current.stdout }}"
 
 - name: "backup old erlang cookie just in case"
   shell: "cp -a {{ rabbitmq_erlang_cookie_path }} {{ rabbitmq_erlang_cookie_path }}.old"
