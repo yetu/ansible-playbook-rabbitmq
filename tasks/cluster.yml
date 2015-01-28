@@ -1,70 +1,5 @@
 ---
 
-#- name: "debug"
-#  debug: msg="{{ hostvars.keys() }}"
-#  tags: ["debug"]
-#  notify: restart rabbitmq-server
-#
-## Make sure rabbitmq server is restarted before proceeding.
-#- meta: flush_handlers
-
-- name: "start rabbitmq-server"
-  service: name=rabbitmq-server state=started
-
-- name: backup old erlang cookie
-  shell: cp -a /var/lib/rabbitmq/.erlang.cookie /var/lib/rabbitmq/.erlang.cookie.old
-
-#- name: check if erlang cookie changed and if it is so stopping server
-#  template:
-#    src=erlang_cookie.j2
-#    dest=/var/lib/rabbitmq/.erlang.cookie.old
-#    owner=rabbitmq
-#    group=rabbitmq
-#    mode=0400
-#  notify: stop rabbitmq-server
-#
-## Make sure rabbitmq server is restarted before proceeding.
-#- meta: flush_handlers
-
-- name: "stop rabbitmq-server"
-  service: name=rabbitmq-server state=stopped
-
-- name: updating rabbitmq erlang cookie
-  template:
-    src=erlang_cookie.j2
-    dest=/var/lib/rabbitmq/.erlang.cookie
-    owner=rabbitmq
-    group=rabbitmq
-    mode=0400
-
-- name: remove old erlang cookie
-  file: path=/var/lib/rabbitmq/.erlang.cookie.old
-        state=absent
-
-
-- name: "start rabbitmq-server"
-  service: name=rabbitmq-server state=started
-
-- name: "debug"
-  debug: msg="{{ hostvars.keys() }}"
-  tags: ["debug"]
-  notify: restart rabbitmq-server
-
-# Make sure rabbitmq server is restarted before proceeding.
-- meta: flush_handlers
-
-#- name: "debug"
-#  debug: msg="{{ hostvars.keys() }}"
-#  tags: ["debug"]
-#
-#- name: "debug2"
-#  debug: msg="{{ hostvars.keys()[0] | replace('.' + dynect_env_domain, '') }}"
-#  tags: ["debug"]
-#
-#- name: "wait"
-#  shell: "sleep 5"
-
-
 - name: "Check if cluster exists and the first node in hosts.ini exists in the status output"
   shell: "rabbitmqctl cluster_status | grep {{ hostvars.keys()[0] | replace('.' + dynect_env_domain, '') }}"
   register: cluster_result
@@ -76,13 +11,14 @@
   shell: rabbitmqctl stop_app
   when: cluster_result is defined and cluster_result.rc == 1
 
-- name: resetting rabbitmq app
-  shell: rabbitmqctl reset
-  when: cluster_result is defined and cluster_result.rc == 1
-
+# TODO: do we need the reset ?
+#- name: resetting rabbitmq app
+#  shell: rabbitmqctl reset
+#  when: cluster_result is defined and cluster_result.rc == 1
 
 ## FIXME: joining cluster via rabbit@rabbit000 fails as it cannot find the server
 ## FIMXE: joining cluster via rabbit@rabbit000.yetudev.com fails as well!
+## FIXME: solution: add servers to /etc/hosts file
 - name: add this node to cluster
   shell: "rabbitmqctl join_cluster rabbit@{{ hostvars.keys()[0] | replace('.' + dynect_env_domain, '') }}"
   when: cluster_result is defined and cluster_result.rc == 1
