@@ -7,23 +7,20 @@
   ignore_errors: True
   when: hostvars.keys()[0] != ansible_fqdn
 
-- name: stop rabbitmq app
-  shell: rabbitmqctl stop_app
+- name: "reset rabbitmq app"
+  shell: "rabbitmqctl reset"
   when: cluster_result is defined and cluster_result.rc == 1
 
-# TODO: do we need the reset ?
-#- name: resetting rabbitmq app
-#  shell: rabbitmqctl reset
-#  when: cluster_result is defined and cluster_result.rc == 1
-
-## FIXME: joining cluster via rabbit@rabbit000 fails as it cannot find the server
-## FIMXE: joining cluster via rabbit@rabbit000.yetudev.com fails as well!
-## FIXME: solution: add servers to /etc/hosts file
-- name: add this node to cluster
-  shell: "rabbitmqctl join_cluster rabbit@{{ hostvars.keys()[0] | replace('.' + dynect_env_domain, '') }}"
+- name: "stop rabbitmq app"
+  shell: "rabbitmqctl stop_app"
   when: cluster_result is defined and cluster_result.rc == 1
 
-- name: start rabbitmq app
-  shell: rabbitmqctl start_app
+# for this to work, an entry including the short hostname must exist in /etc/hosts
+- name: "add this node to cluster"
+  shell: "rabbitmqctl join_cluster --disc rabbit@{{ hostvars.keys()[0] | replace('.' + dynect_env_domain, '') }}"
+  when: cluster_result is defined and cluster_result.rc == 1
+
+- name: "start rabbitmq app"
+  shell: "rabbitmqctl start_app"
   when: cluster_result is defined and cluster_result.rc == 1
 

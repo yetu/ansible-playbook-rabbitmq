@@ -1,4 +1,12 @@
 ---
+
+# hostnames must be first task as ansible behaves weirdly and
+# changes (i.e. removes information from) the contents of ansible facts (i.e. the hostvars variable)
+# during execution. Putting this task any lower will give failures like
+# "One or more undefined variables: 'dict object' has no attribute 'ansible_fqdn'"
+- include: hostnames.yml
+  when: rabbitmq_clustering
+
 - include: install/main.yml
 - include: configuration.yml
 - include: plugins.yml
@@ -6,7 +14,7 @@
 - include: federation.yml
   when: rabbitmq_federation
 
-- include: erlang.yml
+- include: erlang_cookie.yml
   tags: ["rabbitmq-erlang"]
 
 - include: cluster.yml
