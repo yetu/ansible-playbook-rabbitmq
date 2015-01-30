@@ -1,6 +1,9 @@
 ---
-- name: ensure rabbitmq is runned
+- name: "ensure rabbitmq has been started"
   service: name=rabbitmq-server state=started
+
+- name: "ensure also the rabbitmq app has been started"
+  shell: "rabbitmqctl start_app"
 
 - name: add rabbitmq vhost
   rabbitmq_vhost: >
