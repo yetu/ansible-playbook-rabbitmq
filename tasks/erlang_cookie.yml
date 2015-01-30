@@ -7,6 +7,7 @@
 
 - name: check current erlang cookie
   shell: "cat {{ rabbitmq_erlang_cookie_path }}"
+  changed_when: False
   register: rabbitmq_erlang_cookie_current
 
 - name: "backup old erlang cookie just in case"
