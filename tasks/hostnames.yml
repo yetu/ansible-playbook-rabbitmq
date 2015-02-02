@@ -1,15 +1,13 @@
 ---
 
-- name: "look up dns names"
-  shell: "python -c \"import socket; print socket.gethostbyname('{{ item }}')\""
-  register: rabbitmq_servers
-  changed_when: False
-  with_items: groups['rabbitmq']
+# We assume here that the hosts.ini file has a section [rabbitmq] to get information about where this is run.
 
-- name: "Ensure every rabbit server have entries about other rabbit servers in /etc/hosts (this task must be run on all servers in the rabbitmq group simultaneously to resolve facts)"
+- name: "Ensure every rabbit server has entries about other rabbit servers in /etc/hosts (this task must be run on all servers in the rabbitmq group simultaneously to resolve facts)"
   lineinfile:
     dest: "/etc/hosts"
-    regexp: "^{{ item.stdout }}"
-    line: "{{ item.stdout }}{{'\t'}}{{ item.item }}{{'\t'}}{{ item.item | replace('.' + dynect_env_domain, '') }}"
+    regexp: ".*{{ item }}.*"
+    line: "{{ hostvars[item]['ansible_eth0']['ipv4']['address'] }}{{'\t'}}{{ item }}{{'\t'}}{{ item.split('.')[0] }}"
     state: present
-  with_items: rabbitmq_servers.results
+  with_items: groups['rabbitmq']
+  when: item != ansible_fqdn
+
