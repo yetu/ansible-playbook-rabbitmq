@@ -11,10 +11,6 @@
   when: rabbitmq_clustering
   tags: ["rabbitmq-erlang"]
 
-- include: hostnames.yml
-  when: rabbitmq_clustering
-  tags: ["rabbitmq-hostnames"]
-
 - include: cluster.yml
   when: rabbitmq_clustering
   tags: ["rabbitmq-cluster"]
