@@ -10,21 +10,18 @@
   changed_when: False
   register: rabbitmq_erlang_cookie_current
 
-- name: "backup old erlang cookie just in case"
-  shell: "cp -a {{ rabbitmq_erlang_cookie_path }} {{ rabbitmq_erlang_cookie_path }}.old"
-  when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout
-
 - name: "stop rabbitmq-server before updating erlang cookie"
   service: name=rabbitmq-server state=stopped
   when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout
 
-- name: "update rabbitmq erlang cookie"
+- name: "update rabbitmq erlang cookie and backup the old one"
   template:
     src="erlang_cookie.j2"
     dest="{{ rabbitmq_erlang_cookie_path }}"
     owner="rabbitmq"
     group="rabbitmq"
     mode="0400"
+    backup=yes
   when: rabbitmq_erlang_cookie != rabbitmq_erlang_cookie_current.stdout
 
 - name: "start rabbitmq-server again"
