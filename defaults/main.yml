@@ -50,3 +50,4 @@ remove_guest_user                              : true
 
 rabbitmq_clustering                            : false
 
+rabbitmq_hosts                                 : []
