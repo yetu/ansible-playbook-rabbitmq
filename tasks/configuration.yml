@@ -53,3 +53,4 @@
    pattern={{ item.pattern }}
    tags="{{ item.tags }}"
   with_items: rabbitmq_policy_configuration
+  when: rabbitmq_policy_configuration is defined
