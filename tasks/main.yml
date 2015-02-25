@@ -4,6 +4,7 @@
 - include: configuration.yml
 - include: plugins.yml
 - include: vhost.yml
+- include: policies.yml
 - include: federation.yml
   when: rabbitmq_federation
 

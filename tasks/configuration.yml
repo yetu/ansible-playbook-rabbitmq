@@ -45,12 +45,3 @@
     backup=yes
   notify: restart rabbitmq-server
   when: rabbitmq_conf_env is defined
-
-- name: set the available policies
-  rabbitmq_policy:
-   name={{ item.name }}
-   vhost={{ item.vhost | default('/', false) }}
-   pattern={{ item.pattern }}
-   tags="{{ item.tags }}"
-  with_items: rabbitmq_policy_configuration
-  when: rabbitmq_policy_configuration is defined
